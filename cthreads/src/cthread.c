@@ -1,13 +1,15 @@
-
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 
 int cidentify (char *name, int size){
   int length = 18;
-  char names[length];
-  names = "Lisiane e Marcely";
+  const char names[length];
+    strcpy(names,"Lisiane e Marcely");
     if(size < length){
       return -1;
     }else{
-      name = names;
+      strcpy(name, names);
       return 0;
     }
 }
