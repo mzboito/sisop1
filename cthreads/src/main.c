@@ -1,5 +1,6 @@
 #include "../include/cthread.h"
 #include "../include/cdata.h"
+#include "../include/support.h"
 #include <stdio.h>
 
 void* func0(void *arg) {
@@ -15,10 +16,10 @@ void timerTester(){
 	unsigned int tempo;
 	startTimer();
 	for(int i =0; i < 10; i++){
-		printf("a");
+		printf("aaaaaaaaaa");
 	}
 	tempo = stopTimer();
-	printf("tempo foi de %u\n", tempo);
+	printf("\ntempo foi de %u\n", tempo);
 }
 
 int main(int argc, char *argv[]) {
