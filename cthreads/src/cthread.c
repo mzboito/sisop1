@@ -4,6 +4,8 @@
 #include "ucontext.h"
 #include "cdata.h"
 
+int identificadorThread = -1;
+
 int cidentify (char *name, int size){
   int length = 18;
   const char names[length];
@@ -16,42 +18,41 @@ int cidentify (char *name, int size){
     }
 }
 
-int identificadorThread = -1;
-
-
-
-void* funcaoThreadExecuta () {
+void* funcaoThreadExecuta () {  // função que a thread vai executar
 
   printf("Thread executa");
 }
 
-void dispatcher () {
+void dispatcher () { // isso seria o escalonador (?)
 }
 
-int ccreate (void* funcaoThreadExecuta(), void *arg, int prio) {
+int ccreate (void* funcaoAexecutar, void *arg, int prio) {
 
  char stack[SIGSTKSZ]; // pilha por enquanto
 
  //struct s_TCB tcbThread = malloc (sizeof(struct s_TCB)); // alocar tcb
 
- ucontext_t ctx; 
+ ucontext_t ctx; // criar var contexto
 
- getcontext(&ctx);
+ getcontext(&ctx); 
 
  ctx.uc_stack.ss_sp = stack;
  ctx.uc_stack.ss_size = sizeof stack;
 
  if (identificadorThread == -1) {
  	
-     ctx.uc_link = &dispatcher;// pra onde vai depois da thread executar? pra uma funcao que coloca ela na fila de aptos?
+     ctx.uc_link = &dispatcher;// pra onde vai depois da thread executar (a main aqui deu erro)
 } else { 
-     ctx.uc_link = &dispatcher;
+     ctx.uc_link = &dispatcher; 
 }
 
-// tcbThread.tid = identificadorThread++;
- //tcbThread.state = 0;
-// tcbThread.prio = 0;
-// tcbThread.context = makecontext(ctx.uc_link,funcaoThreadExecuta,0);
+ identificadorThread++;
+ tcbThread.tid = identificadorThread;
+ tcbThread.state = 0;
+ tcbThread.prio = 0;
+ tcbThread.context = makecontext(ctx.uc_link,funcaoThreadExecuta,0);
+
+//inserir na fila
 
  return identificadorThread;
 	
