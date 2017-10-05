@@ -4,6 +4,7 @@
 #include "ucontext.h"
 #include "cdata.h"
 
+
 int identificadorThread = -1;
 
 int cidentify (char *name, int size){
@@ -18,19 +19,22 @@ int cidentify (char *name, int size){
     }
 }
 
-void* funcaoThreadExecuta () {  // função que a thread vai executar
+void funcaoThreadExecuta () {  // função que a thread vai executar
 
   printf("Thread executa");
+  
 }
 
-void dispatcher () { // isso seria o escalonador (?)
+int dispatcher () { // isso seria o escalonador (?)
+
+ printf("Escalonador");
 }
 
 int ccreate (void* funcaoAexecutar, void *arg, int prio) {
 
  char stack[SIGSTKSZ]; // pilha por enquanto
 
- //struct s_TCB tcbThread = malloc (sizeof(struct s_TCB)); // alocar tcb
+  TCB_t tcbThread = malloc (sizeof(TCB_t));
 
  ucontext_t ctx; // criar var contexto
 
@@ -59,7 +63,7 @@ int ccreate (void* funcaoAexecutar, void *arg, int prio) {
 	
 }
 
-int ccreate (void* (*start)(void*), void *arg, int prio);
+
 int cyield(void);
 int cjoin(int tid);
 //int csem_init(csem_t *sem, int count);
