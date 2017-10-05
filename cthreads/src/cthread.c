@@ -28,6 +28,7 @@ void funcaoThreadExecuta () {  // função que a thread vai executar
 int dispatcher () { // isso seria o escalonador (?)
 
  printf("Escalonador");
+ return 0;
 }
 
 int ccreate (void* funcaoAexecutar, void *arg, int prio) {
