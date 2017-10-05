@@ -19,19 +19,9 @@ int cidentify (char *name, int size){
     }
 }
 
-void funcaoThreadExecuta () {  // função que a thread vai executar
+int dispatcher ();
 
-  printf("Thread executa");
-  
-}
-
-int dispatcher () { // isso seria o escalonador (?)
-
- printf("Escalonador");
- return 0;
-}
-
-int ccreate (void* funcaoAexecutar, void *arg, int prio) {
+int ccreate(void* (*start)(void*), void *arg, int prio) {
 
  char stack[SIGSTKSZ]; // pilha por enquanto
 
@@ -39,29 +29,28 @@ int ccreate (void* funcaoAexecutar, void *arg, int prio) {
 
  ucontext_t ctx; // criar var contexto
 
- getcontext(&ctx); 
+ getcontext(&ctx);
 
  ctx.uc_stack.ss_sp = stack;
  ctx.uc_stack.ss_size = sizeof stack;
 
  if (identificadorThread == -1) {
- 	
+
      ctx.uc_link = &dispatcher;// pra onde vai depois da thread executar (a main aqui deu erro)
-} else { 
-     ctx.uc_link = &dispatcher; 
+} else {
+     ctx.uc_link = &dispatcher;
 }
 
  identificadorThread++;
  tcbThread.tid = identificadorThread;
  tcbThread.state = 0;
  tcbThread.prio = 0;
- tcbThread.context = makecontext(ctx.uc_link,funcaoThreadExecuta,0);
+ tcbThread.context = makecontext(ctx.uc_link,start,0);
 
 //inserir na fila
 
  return identificadorThread;
-	
-	
+
 }
 
 
