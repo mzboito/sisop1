@@ -139,11 +139,13 @@ int dispatcher(){
     DeleteAtIteratorFila2(&ready);
 
     int pTime = dispatch(task); //dispatching returns how much time was spent running the task
+    printf("%d\n", pTime);
     return pTime;
 
   }
 
   printf("There are no threads left!\n\n");
+  // WHAT WE DO HERE AAAAAAAAAAAAAAAAAAAA
   //exit(0);//do we need to exit(0) it?
   //exit(0);
 }
@@ -152,9 +154,10 @@ int dispatch(TCB_t *task){
   task->state = EXEC;
   running = task;
   //start the timer
-  //printf("Inside dispatch!\n");
+  printf("Inside dispatch!\n");
   startTimer();
   setcontext(&task->context);
+  //IT DOES NOT COMES BACK HERE
   //stop the timer
   int pTime = stopTimer();
   int cpuMz = 2294;
