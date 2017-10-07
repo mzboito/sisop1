@@ -90,10 +90,10 @@ int cyield(void){
     int pTime = stopTimer(); //gets the number of cpu cicles the process took
     running->state = READY;
     int total = pTime % cpuMz;
-    running->prio = task->prio + total; //set the new priority after execution
+    running->prio = running->prio + total; //set the new priority after execution
     AppendFila2(&ready,(void *)running);
     printf("Inside dispatch the total is %d\n", total);
-    swapcontext(running->context, &scheduler_context);
+    swapcontext(&running->context, &scheduler_context);
     return 0;
   }
   return -1;
@@ -157,7 +157,6 @@ int dispatcher(){
 int dispatch(TCB_t *task){
   task->state = EXEC;
   running = task;
-  printf("Inside dispatch!\n");
   setcontext(&task->context);
   return -1; // error return
 }
