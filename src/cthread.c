@@ -8,7 +8,7 @@
 
 //control variables
 
-//a FILA2 for blockd, ready and finished
+//a FILA2 for blocked, ready and finished
 FILA2 ready;
 FILA2 blocked;
 FILA2 finished;
@@ -26,7 +26,6 @@ char terminate_stack[SIGSTKSZ];
 
 
 //header for others functions in the scheduler
-void initialize();
 void terminate();
 int dispatcher();
 int dispatch(TCB_t *task);
@@ -51,7 +50,27 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
 
   if(last_tid < 0){ // it means it is the first created thread from the main flow
-    initialize();
+    last_tid = 0; //main is the pid = 0
+    //scheduler context
+    getcontext(&scheduler_context);
+    scheduler_context.uc_stack.ss_sp = scheduler_stack;
+    scheduler_context.uc_stack.ss_size = sizeof(scheduler_stack);
+    scheduler_context.uc_link = NULL; //again, not sure
+    makecontext(&scheduler_context, (void (*)(void))dispatcher, 0);
+    getcontext(&terminate_context);
+    terminate_context.uc_stack.ss_sp = terminate_stack;
+    terminate_context.uc_stack.ss_size = sizeof(terminate_stack);
+    terminate_context.uc_link = NULL;
+    makecontext(&terminate_context, (void (*)(void))terminate, 0);
+    //initialize the queues (ready, blocked and finished)
+    CreateFila2(&ready);
+    CreateFila2(&blocked);
+    CreateFila2(&finished);
+    running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
+    main_tcb.tid = 0;
+    main_tcb.state = READY; //because now we are going to the thread
+    //[!!!] we are not settting priority for the main tcb
+    running = &main_tcb;
     //printf("last_tid %d\n", last_tid);
     // here we need to set and save the main flow
     getcontext(&main_tcb.context);
@@ -92,30 +111,6 @@ int csignal(csem_t *sem);
 
 
 //other functions
-void initialize(){
-  last_tid = 0; //main is the pid = 0
-  //scheduler context
-  getcontext(&scheduler_context);
-  scheduler_context.uc_stack.ss_sp = scheduler_stack;
-  scheduler_context.uc_stack.ss_size = sizeof(scheduler_stack);
-  scheduler_context.uc_link = NULL; //again, not sure
-  makecontext(&scheduler_context, (void (*)(void))dispatcher, 0);
-  getcontext(&terminate_context);
-  terminate_context.uc_stack.ss_sp = terminate_stack;
-  terminate_context.uc_stack.ss_size = sizeof(terminate_stack);
-  terminate_context.uc_link = NULL;
-  makecontext(&terminate_context, (void (*)(void))terminate, 0);
-  //initialize the queues (ready, blocked and finished)
-  CreateFila2(&ready);
-  CreateFila2(&blocked);
-  CreateFila2(&finished);
-  running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
-  main_tcb.tid = 0;
-  main_tcb.state = READY; //because now we are going to the thread
-  //[!!!] we are not settting priority for the main tcb
-  running = &main_tcb;
-}
-
 void terminate(){
   running->state = ENDED;
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
@@ -127,9 +122,7 @@ void terminate(){
 int dispatcher(){
   //printf("Now I'm on the dispatcher\n");
   //sort the list
-
   //InsertAfterIteratorFila2(PFILA2 pFila, void *content);
-
   FirstFila2(&ready);
   TCB_t *task = (TCB_t *) GetAtIteratorFila2(&ready); //get first one
   //see if it this first one is not null (empty list)
@@ -137,17 +130,14 @@ int dispatcher(){
     //printf("Now it will execute\n");
     //and then remove it from ready list and then put it to run
     DeleteAtIteratorFila2(&ready);
-
     int pTime = dispatch(task); //dispatching returns how much time was spent running the task
     printf("%d\n", pTime);
     return pTime;
 
   }
-
   printf("There are no threads left!\n\n");
   // WHAT WE DO HERE AAAAAAAAAAAAAAAAAAAA
-  //exit(0);//do we need to exit(0) it?
-  //exit(0);
+  return 0;
 }
 
 int dispatch(TCB_t *task){
