@@ -15,7 +15,8 @@ printf("Thread executa");
 int main(int argc, char *argv[]) {
 
 int arg = 1;
+printf("I will now create the thread\n");
 int teste = ccreate (funcaoThreadExecuta, &arg,0);
-printf("%d\n",teste);
+printf("The returned tid is: %d\n",teste);
 
 }

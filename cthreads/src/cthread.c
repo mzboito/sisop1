@@ -63,6 +63,7 @@ context->uc_stack.ss_sp = stack;
 context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
 makecontext(context, (void (*)(void)) start, 1, arg);
 
+printf("I entendered the ccthread, but the tid is crazy\n");
 //now we need to add it on the ready queue
 
 
