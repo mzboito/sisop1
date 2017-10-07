@@ -54,11 +54,12 @@ if(last_tid < 0){ // it means it is the first created thread from the main flow
 }
 
 //now we create the new TCB structure
+last_tid++;
 TCB_t *tcb = malloc(sizeof(TCB_t));
-tcb->tid = last_tid++; //the first thread will be the thread 0
+tcb->tid = last_tid; //the first thread will be the thread 0
 tcb->state = READY;
 
-printf("last_tid %d\n", last_tid);
+//printf("last_tid %d\n", last_tid);
 //now we need to create a new tcb-> context
 getcontext(&tcb->context);
 ucontext_t *context = &tcb->context;
@@ -67,7 +68,7 @@ context->uc_stack.ss_sp = stack;
 context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
 makecontext(context, (void (*)(void)) start, 1, arg);
 
-printf("I entendered the ccthread, but the tid is crazy\n");
+//printf("I entendered the ccthread, but the tid is crazy\n");
 //now we need to add it on the ready queue
 
 

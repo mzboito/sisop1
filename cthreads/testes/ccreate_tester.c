@@ -18,5 +18,6 @@ int arg = 1;
 printf("I will now create the thread\n");
 int teste = ccreate (funcaoThreadExecuta, &arg,0);
 printf("The returned tid is: %d\n",teste);
-
+teste = ccreate(funcaoThreadExecuta, &arg, 0);
+printf("The returned tid is: %d\n", teste);
 }
