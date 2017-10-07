@@ -68,6 +68,7 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   tcb->tid = last_tid; //the first thread will be the thread 0
   tcb->state = READY;
   tcb->prio = prio;
+  tcb->wait_tid = NULL;
   //printf("last_tid %d\n", last_tid);
   //now we need to create a new tcb-> context
   getcontext(&tcb->context);
@@ -99,7 +100,21 @@ int cyield(void){
   return -1;
 }
 
-int cjoin(int tid);
+int cjoin(int tid){
+  //get TCB from the tid
+  //if there is already a thread waiting for this tid
+  // return error and continues with execution
+  //if this tid is from a dead thread, we do the same
+  //else
+
+  running->state = BLOCKED;  //running state goes to blocked
+  //saves the tid in this tcb
+  //changes priority
+  AppendFila2(&blocked, (void *) running); //adds this thread in the blocked list
+  swapcontext(&running->context, &scheduler_context);//switch with scheduler
+  return 0;
+}
+
 int csem_init(csem_t *sem, int count);
 int cwait(csem_t *sem);
 int csignal(csem_t *sem);
@@ -126,6 +141,7 @@ void initialize(){
   running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
   main_tcb.tid = 0;
   main_tcb.state = READY; //because now we are going to the thread
+  main_tcb.wait_tid = NULL;
   //[!!!] we are not settting priority for the main tcb
   running = &main_tcb;
 }

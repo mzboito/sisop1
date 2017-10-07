@@ -25,6 +25,7 @@ typedef struct s_TCB {
 					// 0: Cria��o; 1: Apto; 2: Execu��o; 3: Bloqueado e 4: T�rmino
 	unsigned 	int		prio;		// prioridade da thread (higest=0; lowest=3)
 	ucontext_t 	context;	// contexto de execu��o da thread (SP, PC, GPRs e recursos)
+	int wait_tid; // identificador da thread que está sendo esperada para continuar a execucao
 
 	/* Se necess�rio, pode-se acresecentar campos nessa estrutura A PARTIR DAQUI! */
 
