@@ -17,6 +17,7 @@ int last_tid = -1;
 
 //header for others functions in the scheduler
 int dispatcher();
+void initialize();
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -40,7 +41,9 @@ char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
 if(last_tid < 0){ // it means it is the first created thread from the main flow
 
   // here we need to create the queues, the scheduler context and the structures!!
+  initialize();
 
+  printf("last_tid %d\n", last_tid);
   // here we need to set and save the main flow
   getcontext(&main_tcb.context);
   ucontext_t *context = &main_tcb.context;
@@ -55,6 +58,7 @@ TCB_t *tcb = malloc(sizeof(TCB_t));
 tcb->tid = last_tid++; //the first thread will be the thread 0
 tcb->state = READY;
 
+printf("last_tid %d\n", last_tid);
 //now we need to create a new tcb-> context
 getcontext(&tcb->context);
 ucontext_t *context = &tcb->context;
@@ -95,4 +99,18 @@ int cjoin(int tid);
 //int csignal(csem_t *sem);
 
 
-//implementacao de outras funcoes necessarias
+//other functions
+void initialize(){
+  last_tid = 0; //main is the pid = 0
+
+  //scheduler context
+
+  // maybe a terminate structure??
+
+  //initialize the queues (ready, blocked and finished)
+
+  main_tcb.tid = 0;
+  main_tcb.state = READY; //because now we are going to the thread
+
+  running = &main_tcb;
+}
