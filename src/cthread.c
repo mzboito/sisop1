@@ -30,7 +30,7 @@ void addInSortedFILA2(PFILA2 pfila, void *content);
 
 int cidentify (char *name, int size){
   int length = 18;
-  const char names[length];
+  char names[length];
     strcpy(names,"Lisiane\nMarcely");
     if(size < length){
       return -1;
