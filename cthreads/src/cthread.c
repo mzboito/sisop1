@@ -58,6 +58,7 @@ last_tid++;
 TCB_t *tcb = malloc(sizeof(TCB_t));
 tcb->tid = last_tid; //the first thread will be the thread 0
 tcb->state = READY;
+tcb->prio = prio;
 
 //printf("last_tid %d\n", last_tid);
 //now we need to create a new tcb-> context
