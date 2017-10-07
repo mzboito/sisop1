@@ -101,14 +101,32 @@ int cyield(void){
 }
 
 int cjoin(int tid){
-  //get TCB from the tid
-  //if there is already a thread waiting for this tid
-  // return error and continues with execution
-  //if this tid is from a dead thread, we do the same
-  //else
+  TCB_t *tcb;
+  //case there is already someone waiting
+  FirstFila2(&blocked);
+  do{
+    tcb = (TCB_t *) GetAtIteratorFila2(&blocked);
+    if(tcb){
+      if(tcb->wait_tid == tid){
+        return -1; //we only allow one thread to be waited for, ERROR
+      }
+    }
+  }
 
+  //case the thread is dead
+  FirstFila2(&finished);
+  do{
+    tcb = (TCB_t *) GetAtIteratorFila2(&finished);
+    if(tcb){
+      if(tcb->tid == tid){
+        return -1; //if this tid is from a dead thread, ERROR
+      }
+    }
+  }while(NextFila2(&finished) == 0); //while there are still elements left
+
+  //else, it is okay
   running->state = BLOCKED;  //running state goes to blocked
-  //saves the tid in this tcb
+  running->wait_tid = tid;
   //changes priority
   AppendFila2(&blocked, (void *) running); //adds this thread in the blocked list
   swapcontext(&running->context, &scheduler_context);//switch with scheduler
