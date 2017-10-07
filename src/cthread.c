@@ -18,13 +18,20 @@ TCB_t main_tcb; //saves everything from the main flow
 
 int last_tid = -1;
 
-//scheduler context (not sure yet how to implement, but uses ucontext_t)
+//scheduler context (necessary to know what to do when a thread finishes its job)
+ucontext_t scheduler_context;
+char scheduler_stack[SIGSTKSZ];
+ucontext_t terminate_context;
+char terminate_stack[SIGSTKSZ];
+
 
 //header for others functions in the scheduler
 void initialize();
+void terminate();
 int dispatcher();
 int dispatch(TCB_t *task);
-void addInSortedFILA2(PFILA2 pfila, void *content);
+
+//void addInSortedFILA2(PFILA2 pfila, void *content);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -41,41 +48,40 @@ int cidentify (char *name, int size){
 }
 
 int ccreate(void* (*start)(void*), void *arg, int prio) {
- char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
+  char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
 
-if(last_tid < 0){ // it means it is the first created thread from the main flow
-  initialize();
+  if(last_tid < 0){ // it means it is the first created thread from the main flow
+    initialize();
+    //printf("last_tid %d\n", last_tid);
+    // here we need to set and save the main flow
+    getcontext(&main_tcb.context);
+    ucontext_t *context = &main_tcb.context;
+    context->uc_stack.ss_sp = stack;
+    context->uc_stack.ss_size = sizeof(char)*SIGSTKSZ;
+    context->uc_link = &terminate_context; //!!! not sure yet
+    makecontext(context, (void(*)(void)) start, 1, arg);
+  }
+
+  //now we create the new TCB structure
+  last_tid++;
+  TCB_t *tcb = malloc(sizeof(TCB_t));
+  tcb->tid = last_tid; //the first thread will be the thread 0
+  tcb->state = READY;
+  tcb->prio = prio;
+
   //printf("last_tid %d\n", last_tid);
-  // here we need to set and save the main flow
-  getcontext(&main_tcb.context);
-  ucontext_t *context = &main_tcb.context;
-  //context->uc_link = ??
+  //now we need to create a new tcb-> context
+  getcontext(&tcb->context);
+  ucontext_t *context = &tcb->context;
   context->uc_stack.ss_sp = stack;
-  context->uc_stack.ss_size = sizeof(char)*SIGSTKSZ;
-  makecontext(context, (void(*)(void)) start, 1, arg);
-}
+  context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
+  context->uc_link = &terminate_context;
+  makecontext(context, (void (*)(void)) start, 1, arg);
 
-//now we create the new TCB structure
-last_tid++;
-TCB_t *tcb = malloc(sizeof(TCB_t));
-tcb->tid = last_tid; //the first thread will be the thread 0
-tcb->state = READY;
-tcb->prio = prio;
-
-//printf("last_tid %d\n", last_tid);
-//now we need to create a new tcb-> context
-getcontext(&tcb->context);
-ucontext_t *context = &tcb->context;
-//context->uc_link = ???
-context->uc_stack.ss_sp = stack;
-context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
-makecontext(context, (void (*)(void)) start, 1, arg);
-
-//printf("I entendered the ccthread, but the tid is crazy\n");
-//now we need to add it on the ready queue
-AppendFila2(&ready, (void *)tcb);
-
- return tcb->tid;
+  //printf("I entendered the ccthread, but the tid is crazy\n");
+  //now we need to add it on the ready queue
+  AppendFila2(&ready, (void *)tcb);
+  return tcb->tid;
 }
 
 int cyield(void);
@@ -88,21 +94,34 @@ int csignal(csem_t *sem);
 //other functions
 void initialize(){
   last_tid = 0; //main is the pid = 0
-
   //scheduler context
-
-  // maybe a terminate structure??
-
+  getcontext(&scheduler_context);
+  scheduler_context.uc_stack.ss_sp = scheduler_stack;
+  scheduler_context.uc_stack.ss_size = sizeof(scheduler_stack);
+  scheduler_context.uc_link = NULL; //again, not sure
+  makecontext(&scheduler_context, (void (*)(void))dispatcher, 0);
+  getcontext(&terminate_context);
+  terminate_context.uc_stack.ss_sp = terminate_stack;
+  terminate_context.uc_stack.ss_size = sizeof(terminate_stack);
+  terminate_context.uc_link = NULL;
+  makecontext(&terminate_context, (void (*)(void))terminate, 0);
   //initialize the queues (ready, blocked and finished)
   CreateFila2(&ready);
   CreateFila2(&blocked);
   CreateFila2(&finished);
-
+  running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
   main_tcb.tid = 0;
   main_tcb.state = READY; //because now we are going to the thread
   //[!!!] we are not settting priority for the main tcb
-
   running = &main_tcb;
+}
+
+void terminate(){
+  running->state = ENDED;
+  free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
+  AppendFila2(&finished, (void *)running); //goes to list of finished threads
+  //if something was waiting, we should free it to continue execution
+  setcontext(&scheduler_context); //goes back to the scheduler to set next thread
 }
 
 int dispatcher(){
@@ -124,7 +143,9 @@ int dispatcher(){
 
   }
 
-  //do we need to exit(0) it?
+  printf("There are no threads left!\n\n");
+  //exit(0);//do we need to exit(0) it?
+  //exit(0);
 }
 
 int dispatch(TCB_t *task){
@@ -138,7 +159,7 @@ int dispatch(TCB_t *task){
   int pTime = stopTimer();
   int cpuMz = 2294;
   int total = pTime % cpuMz;
-  //printf("Inside dispatch the total is %d\n", total);
+  printf("Inside dispatch the total is %d\n", total);
   task->prio = task->prio + total; //set the new priority after execution
   return total;
 }
