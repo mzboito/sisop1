@@ -24,6 +24,7 @@ int last_tid = -1;
 void initialize();
 int dispatcher();
 int dispatch(TCB_t *task);
+void addInSortedFILA2(PFILA2 pfila, void *content);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -105,14 +106,16 @@ void initialize(){
 }
 
 int dispatcher(){
-  printf("Now I'm on the dispatcher\n");
+  //printf("Now I'm on the dispatcher\n");
   //sort the list
+
+  //InsertAfterIteratorFila2(PFILA2 pFila, void *content);
 
   FirstFila2(&ready);
   TCB_t *task = (TCB_t *) GetAtIteratorFila2(&ready); //get first one
   //see if it this first one is not null (empty list)
   if(task){
-    printf("Now it will execute\n");
+    //printf("Now it will execute\n");
     //and then remove it from ready list and then put it to run
     DeleteAtIteratorFila2(&ready);
 
@@ -128,15 +131,14 @@ int dispatch(TCB_t *task){
   task->state = EXEC;
   running = task;
   //start the timer
-  printf("Inside dispatch!\n");
+  //printf("Inside dispatch!\n");
   startTimer();
   setcontext(&task->context);
   //stop the timer
   int pTime = stopTimer();
   int cpuMz = 2294;
   int total = pTime % cpuMz;
-  printf("Inside dispatch the total is %d\n", total);
+  //printf("Inside dispatch the total is %d\n", total);
+  task->prio = task->prio + total; //set the new priority after execution
   return total;
-
-
 }
