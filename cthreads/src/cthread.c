@@ -1,7 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include <ucontext.h>
+#include "ucontext.h"
 #include "../include/support.h"
 #include "cdata.h"
 
@@ -22,7 +22,8 @@ int last_tid = -1;
 
 //header for others functions in the scheduler
 void initialize();
-int dispatcher(TCB_t *task);
+int dispatcher();
+int dispatch(TCB_t *task);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -101,4 +102,41 @@ void initialize(){
   //[!!!] we are not settting priority for the main tcb
 
   running = &main_tcb;
+}
+
+int dispatcher(){
+  printf("Now I'm on the dispatcher\n");
+  //sort the list
+
+  FirstFila2(&ready);
+  TCB_t *task = (TCB_t *) GetAtIteratorFila2(&ready); //get first one
+  //see if it this first one is not null (empty list)
+  if(task){
+    printf("Now it will execute\n");
+    //and then remove it from ready list and then put it to run
+    DeleteAtIteratorFila2(&ready);
+
+    int pTime = dispatch(task); //dispatching returns how much time was spent running the task
+    return pTime;
+
+  }
+
+  //do we need to exit(0) it?
+}
+
+int dispatch(TCB_t *task){
+  task->state = EXEC;
+  running = task;
+  //start the timer
+  printf("Inside dispatch!\n");
+  startTimer();
+  setcontext(&task->context);
+  //stop the timer
+  int pTime = stopTimer();
+  int cpuMz = 2294;
+  int total = pTime % cpuMz;
+  printf("Inside dispatch the total is %d\n", total);
+  return total;
+
+
 }
