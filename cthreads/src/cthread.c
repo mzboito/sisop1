@@ -1,9 +1,10 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "ucontext.h"
-#include "cdata.h"
+#include <ucontext.h>
 #include "../include/support.h"
+#include "cdata.h"
+
 
 //control variables
 
@@ -77,9 +78,9 @@ AppendFila2(&ready, (void *)tcb);
 
 int cyield(void);
 int cjoin(int tid);
-//int csem_init(csem_t *sem, int count);
-//int cwait(csem_t *sem);
-//int csignal(csem_t *sem);
+int csem_init(csem_t *sem, int count);
+int cwait(csem_t *sem);
+int csignal(csem_t *sem);
 
 
 //other functions
