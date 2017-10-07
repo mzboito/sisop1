@@ -88,12 +88,12 @@ int cyield(void){
       initialize();
   }
   if(running){ //if running pointer is not null
-    int pTime = stopTimer(); //gets the number of cpu cicles the process took
+    //int pTime = stopTimer(); //gets the number of cpu cicles the process took
     running->state = READY;
-    int total = pTime % cpuMz;
-    running->prio = running->prio + total; //set the new priority after execution
+    //int total = pTime % cpuMz;
+    //running->prio = running->prio + total; //set the new priority after execution
     AppendFila2(&ready,(void *)running);
-    printf("Inside dispatch the total is %d\n", total);
+    //printf("Inside dispatch the total is %d\n", total);
     swapcontext(&running->context, &scheduler_context);
     return 0;
   }
@@ -181,7 +181,7 @@ int dispatcher(){
   if(task){ //see if it this first one is not null (empty list)
     //printf("Now it will execute\n");
     DeleteAtIteratorFila2(&ready); //and then remove it from ready list
-    startTimer();
+    //startTimer();
     dispatch(task); //dispatching returns how much time was spent running the task
   }
   printf("There are no threads left!\n\n");
