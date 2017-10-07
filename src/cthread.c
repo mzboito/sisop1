@@ -68,7 +68,7 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   tcb->tid = last_tid; //the first thread will be the thread 0
   tcb->state = READY;
   tcb->prio = prio;
-  tcb->wait_tid = NULL;
+  tcb->wait_tid = -1;
   //printf("last_tid %d\n", last_tid);
   //now we need to create a new tcb-> context
   getcontext(&tcb->context);
@@ -111,7 +111,7 @@ int cjoin(int tid){
         return -1; //we only allow one thread to be waited for, ERROR
       }
     }
-  }
+  }while(NextFila2(&blocked) == 0);
 
   //case the thread is dead
   FirstFila2(&finished);
@@ -159,7 +159,7 @@ void initialize(){
   running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
   main_tcb.tid = 0;
   main_tcb.state = READY; //because now we are going to the thread
-  main_tcb.wait_tid = NULL;
+  main_tcb.wait_tid = -1;
   //[!!!] we are not settting priority for the main tcb
   running = &main_tcb;
 }
