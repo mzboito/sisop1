@@ -3,10 +3,14 @@
 #include "string.h"
 #include "ucontext.h"
 #include "cdata.h"
+#include "../include/support.h"
 
 //control variables
-//a FILA2 for blockd, ready abnd finished should be added here
 
+//a FILA2 for blockd, ready and finished
+FILA2 ready;
+FILA2 blocked;
+FILA2 finished;
 enum state {CREATED, READY, EXEC, BLOCKED, ENDED};
 TCB_t *running; //the running TCB_t pointer points to the thread running
 TCB_t main_tcb; //saves everything from the main flow
@@ -16,8 +20,8 @@ int last_tid = -1;
 //scheduler context (not sure yet how to implement, but uses ucontext_t)
 
 //header for others functions in the scheduler
-int dispatcher();
 void initialize();
+int dispatcher(TCB_t *task);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -34,16 +38,11 @@ int cidentify (char *name, int size){
 }
 
 int ccreate(void* (*start)(void*), void *arg, int prio) {
-
- //char stack[SIGSTKSZ]; // pilha por enquanto
-char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
+ char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
 
 if(last_tid < 0){ // it means it is the first created thread from the main flow
-
-  // here we need to create the queues, the scheduler context and the structures!!
   initialize();
-
-  printf("last_tid %d\n", last_tid);
+  //printf("last_tid %d\n", last_tid);
   // here we need to set and save the main flow
   getcontext(&main_tcb.context);
   ucontext_t *context = &main_tcb.context;
@@ -71,25 +70,7 @@ makecontext(context, (void (*)(void)) start, 1, arg);
 
 //printf("I entendered the ccthread, but the tid is crazy\n");
 //now we need to add it on the ready queue
-
-
-/* OLD VERSION
-  TCB_t tcbThread = malloc (sizeof(TCB_t));
- ucontext_t ctx; // criar var contexto
- getcontext(&ctx);
- ctx.uc_stack.ss_sp = stack;
- ctx.uc_stack.ss_size = sizeof stack;
- if (identificadorThread == -1) {
-     ctx.uc_link = &dispatcher;// pra onde vai depois da thread executar (a main aqui deu erro)
-} else {
-     ctx.uc_link = &dispatcher;
-}
- identificadorThread++;
- tcbThread.tid = last_tid;
- tcbThread.state = 0;
- tcbThread.prio = 0;
- //tcbThread.context =
- makecontext(ctx.uc_link,start,0);*/
+AppendFila2(&ready, (void *)tcb);
 
  return tcb->tid;
 }
@@ -110,9 +91,13 @@ void initialize(){
   // maybe a terminate structure??
 
   //initialize the queues (ready, blocked and finished)
+  CreateFila2(&ready);
+  CreateFila2(&blocked);
+  CreateFila2(&finished);
 
   main_tcb.tid = 0;
   main_tcb.state = READY; //because now we are going to the thread
+  //[!!!] we are not settting priority for the main tcb
 
   running = &main_tcb;
 }
