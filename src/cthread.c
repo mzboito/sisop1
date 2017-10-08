@@ -198,18 +198,16 @@ int dispatch(TCB_t *task){
 
 void unblock_thread(int tid){
   FirstFila2(&blocked);
-  if(blocked.it){
-    TCB_t blocked_tcb;
-    do{
-      blocked_tcb = (TCB_t *) GetAtIteratorFila2(&blocked);
-      if(blocked_tcb){
-        if(blocked_tcb.wait_tid == tid){ //it there is someone waiting
-          blocked_tcb.wait_tid = -1;
-          blocked_tcb.state = READY;
-          AppendFila2(&ready, (void *)blocked_tcb);
-          DeleteAtIteratorFila2(&blocked);
-        }
+  TCB_t *blocked_tcb;
+  do{
+    blocked_tcb = (TCB_t*) GetAtIteratorFila2(&blocked);
+    if(blocked_tcb){
+      if(blocked_tcb->wait_tid == tid){ //it there is someone waiting
+        blocked_tcb->wait_tid = -1;
+        blocked_tcb->state = READY;
+        AppendFila2(&ready, (void *)blocked_tcb);
+        DeleteAtIteratorFila2(&blocked);
       }
-    }while(NextFila2(&blocked) == 0); //while there are still elements left
+    }
+  }while(NextFila2(&blocked) == 0); //while there are still elements left
   }
-}
