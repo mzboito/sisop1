@@ -5,9 +5,7 @@
 #include "../include/support.h"
 #include "cdata.h"
 
-
 //control variables
-
 //a FILA2 for blocked, ready and finished
 FILA2 ready;
 FILA2 blocked;
@@ -32,6 +30,7 @@ void terminate();
 int dispatcher();
 int dispatch(TCB_t *task);
 void unblock_thread(int tid);
+int setPriority();
 
 //void addInSortedFILA2(PFILA2 pfila, void *content);
 
@@ -89,12 +88,9 @@ int cyield(void){
       initialize();
   }
   if(running){ //if running pointer is not null
-    //int pTime = stopTimer(); //gets the number of cpu cicles the process took
     running->state = READY;
-    //int total = pTime % cpuMz;
-    //running->prio = running->prio + total; //set the new priority after execution
     AppendFila2(&ready,(void *)running);
-    //printf("Inside dispatch the total is %d\n", total);
+    setPriority(); //set the new priority after execution
     swapcontext(&running->context, &scheduler_context);
     return 0;
   }
@@ -130,6 +126,7 @@ int cjoin(int tid){
   running->wait_tid = tid;
   //changes priority
   AppendFila2(&blocked, (void *) running); //adds this thread in the blocked list
+  setPriority(); //set the new priority
   swapcontext(&running->context, &scheduler_context);//switch with scheduler
   return 0;
 }
@@ -167,6 +164,8 @@ void initialize(){
 
 void terminate(){
   running->state = ENDED;
+  stopTimer();
+  printf("finished without needing to save the clock\n");
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
   AppendFila2(&finished, (void *)running); //goes to list of finished threads
   unblock_thread(running->tid);//if something was waiting, we should free it to continue execution
@@ -180,9 +179,7 @@ int dispatcher(){
   FirstFila2(&ready);
   TCB_t *task = (TCB_t *) GetAtIteratorFila2(&ready); //get first one
   if(task){ //see if it this first one is not null (empty list)
-    //printf("Now it will execute\n");
     DeleteAtIteratorFila2(&ready); //and then remove it from ready list
-    //startTimer();
     dispatch(task); //dispatching returns how much time was spent running the task
   }
   printf("There are no threads left!\n\n");
@@ -192,6 +189,7 @@ int dispatcher(){
 int dispatch(TCB_t *task){
   task->state = EXEC;
   running = task;
+  startTimer();
   setcontext(&task->context);
   return -1; // error return
 }
@@ -211,3 +209,13 @@ void unblock_thread(int tid){
     }
   }while(NextFila2(&blocked) == 0); //while there are still elements left
   }
+
+int setPriority(){
+  int pTime = stopTimer(); //gets the number of cpu cicles the process took
+  if(pTime > 0){
+    running->prio = running->prio + (pTime % cpuMz);
+    printf("Inside dispatch the total is %d\n", running->prio);
+    return 0;
+  }
+  return -1;
+}

@@ -21,6 +21,8 @@ ccreate(funcaoThreadExecuta, &arg,0);
 ccreate(funcaoThreadExecuta, &arg,5);
 printf("Now the thread is on the ready list\n");
 printf("It would be soooo nice to finish the thread and come back heeere\n");
-cjoin(1);
+printf("Return cjoin ok: %d\n",cjoin(1));
+printf("Return cjoin error: %d\n",cjoin(1));
+printf("Return cjoin thread já morreu: %d\n",cjoin(2));
 printf("And finally we are finished\n");
 }
