@@ -31,6 +31,7 @@ void initialize();
 void terminate();
 int dispatcher();
 int dispatch(TCB_t *task);
+void unblock_thread(int tid);
 
 //void addInSortedFILA2(PFILA2 pfila, void *content);
 
@@ -168,7 +169,7 @@ void terminate(){
   running->state = ENDED;
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
   AppendFila2(&finished, (void *)running); //goes to list of finished threads
-  //if something was waiting, we should free it to continue execution
+  unblock_thread(running->tid);//if something was waiting, we should free it to continue execution
   setcontext(&scheduler_context); //goes back to the scheduler to set next thread
 }
 
@@ -193,4 +194,22 @@ int dispatch(TCB_t *task){
   running = task;
   setcontext(&task->context);
   return -1; // error return
+}
+
+void unblock_thread(int tid){
+  FirstFila2(&blocked);
+  if(blocked.it){
+    TCB_t blocked_tcb;
+    do{
+      blocked_tcb = (TCB_t *) GetAtIteratorFila2(&blocked);
+      if(blocked_tcb){
+        if(blocked_tcb.wait_tid == tid){ //it there is someone waiting
+          blocked_tcb.wait_tid = -1;
+          blocked_tcb.state = READY;
+          AppendFila2(&ready, (void *)blocked_tcb);
+          DeleteAtIteratorFila2(&blocked);
+        }
+      }
+    }while(NextFila2(&blocked) == 0); //while there are still elements left
+  }
 }
