@@ -225,16 +225,18 @@ int setPriority(){
 int addInSortedFILA2(FILA2 fila, TCB_t *content){
   FirstFila2(&fila);
   TCB_t *tcb = (TCB_t*)GetAtIteratorFila2(&fila);
-
   if(!tcb){ //if the list is empty
     AppendFila2(&fila, (void*) content);
     return 0;
   }
   //else
   do{
-    if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
-      InsertBeforeIteratorFila2(&fila, (void*) content); //puts it in the position before TCB
-      return 0;
+    tcb =  (TCB_t*) GetAtIteratorFila2(&fila);
+    if(tcb){
+      if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
+        InsertBeforeIteratorFila2(&fila, (void*) content); //puts it in the position before TCB
+        return 0;
+      }
     }
   }while(NextFila2(&fila) == 0); //while there are still elements left
   //if the code comes here, it means the content is the largest in priority value
