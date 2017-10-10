@@ -31,7 +31,7 @@ int dispatcher();
 int dispatch(TCB_t *task);
 void unblock_thread(int tid);
 int setPriority();
-int addInSortedFILA2(FILA2 fila, TCB_t *content);
+int addInSortedFILA2(PFILA2 fila, TCB_t *content);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -222,24 +222,26 @@ int setPriority(){
   return -1;
 }
 
-int addInSortedFILA2(FILA2 fila, TCB_t *content){
-  FirstFila2(&fila);
-  TCB_t *tcb = (TCB_t*)GetAtIteratorFila2(&fila);
-  if(!tcb){ //if the list is empty
-    AppendFila2(&fila, (void*) content);
+int addInSortedFILA2(PFILA2 fila, TCB_t *content){
+  if(FirstFila2(fila) != 0){ //if the list is empty
+    AppendFila2(fila, (void*) content);
+    //printf("first call here\n");
     return 0;
   }
   //else
+  TCB_t *tcb;
+  //FirstFila2(&fila);
   do{
-    tcb =  (TCB_t*) GetAtIteratorFila2(&fila);
+    tcb =  (TCB_t*)GetAtIteratorFila2(fila);
     if(tcb){
+      //printf("second call here\n");
       if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
-        InsertBeforeIteratorFila2(&fila, (void*) content); //puts it in the position before TCB
+        InsertBeforeIteratorFila2(fila, (void*) content); //puts it in the position before TCB
         return 0;
       }
     }
-  }while(NextFila2(&fila) == 0); //while there are still elements left
+  }while(NextFila2(fila) == 0); //while there are still elements left
   //if the code comes here, it means the content is the largest in priority value
-  InsertAfterIteratorFila2(&fila, (void*) content); //puts it in the last position of the FILA2
+  AppendFila2(fila, (void*) content); //puts it in the last position of the FILA2
   return 0;
 }
