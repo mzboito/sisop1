@@ -171,7 +171,7 @@ void initialize(){
   main_tcb.tid = 0;
   main_tcb.state = READY; //because now we are going to the thread
   main_tcb.wait_tid = -1;
-  //[!!!] we are not settting priority for the main tcb
+  main_tcb.prio = 0;
   running = &main_tcb;
 }
 
@@ -236,16 +236,13 @@ int setPriority(){
 int addInSortedFILA2(PFILA2 fila, TCB_t *content){
   if(FirstFila2(fila) != 0){ //if the list is empty
     AppendFila2(fila, (void*) content);
-    //printf("first call here\n");
     return 0;
   }
   //else
   TCB_t *tcb;
-  //FirstFila2(&fila);
   do{
     tcb =  (TCB_t*)GetAtIteratorFila2(fila);
     if(tcb){
-      //printf("second call here\n");
       if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
         InsertBeforeIteratorFila2(fila, (void*) content); //puts it in the position before TCB
         return 0;

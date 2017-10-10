@@ -6,27 +6,27 @@
 
 void foo1() {
 printf("I'm priority 2!\n");
-//for(int i=0;i < 1000000; i++);
+for(int i=0;i < 1000000; i++);
 }
 
 void foo2() {
 printf("I'm priority 4!\n");
-//for(int i=0;i < 1000000; i++);
+for(int i=0;i < 1000000; i++);
 }
 
 void foo3() {
 printf("I'm priority 5!\n");
-//for(int i=0;i < 1000000; i++);
+for(int i=0;i < 1000000; i++);
 }
 
 void foo4() {
 printf("I'm priority 1!\n");
-//for(int i=0;i < 1000000; i++);
+for(int i=0;i < 1000000; i++);
 }
 
 void foo5() {
 printf("I'm priority 3!\n");
-//for(int i=0;i < 1000000; i++);
+for(int i=0;i < 1000000; i++);
 }
 
 int main(int argc, char *argv[]) {
@@ -38,6 +38,6 @@ int main(int argc, char *argv[]) {
   ccreate(foo4, &arg,1);
   ccreate(foo5, &arg,3);
   cyield();
-  printf("I am on the main right now\n");  
+  printf("I am on the main right now\n");
   printf("And finally we are finished\n");
 }
