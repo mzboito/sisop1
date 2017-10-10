@@ -134,7 +134,18 @@ int cjoin(int tid){
   return 0;
 }
 
-int csem_init(csem_t *sem, int count);
+int csem_init(csem_t *sem, int count) {
+
+  if (count < 0) {
+	return -1;
+  }
+   PFILA2 filaSem;
+   CreateFila2(filaSem);
+   sem->count = count;
+   sem->fila = filaSem;
+   return 0;
+}
+
 int cwait(csem_t *sem);
 int csignal(csem_t *sem);
 
