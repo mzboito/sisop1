@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "string.h"
+
 #include "ucontext.h"
 #include "../include/support.h"
 #include "cdata.h"
@@ -37,15 +37,19 @@ int setPriority();
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
 int cidentify (char *name, int size){
-  int length = 18;
-  char names[length];
-    strcpy(names,"Lisiane\nMarcely");
-    if(size < length){
+  int length = 30;
+  if(size < length){
       return -1;
-    }else{
-      strcpy(name, names);
+ }
+  char names[] = {'L','i','s','i','a','n','e',':','2','5','2','7','3','9','\n','M','a','r','c','e','l','y',':','2','2','8','4','5','4'};
+  int i = 0;
+  for (i = 0; i < length; i++) {
+
+	*name = names[i];
+	name++;
+  }
       return 0;
-    }
+    
 }
 
 int ccreate(void* (*start)(void*), void *arg, int prio) {
