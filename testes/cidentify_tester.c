@@ -13,7 +13,7 @@ char* stringu = (char*) malloc(30*sizeof(char));
   printf("%d\n",bla);
   free(stringu);  
 
-  int length = 20;
+  int length = 37;
   char* str1 = (char*)malloc(sizeof(char)*(length + 1));
   printf("%d\n",cidentify(str1,length));
   free(str1);

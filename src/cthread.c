@@ -1,9 +1,9 @@
 #include "stdio.h"
 #include "stdlib.h"
-
 #include "ucontext.h"
 #include "../include/support.h"
-#include "cdata.h"
+#include "../include/cdata.h"
+#include "../include/cthread.h"
 
 //control variables
 //a FILA2 for blocked, ready and finished
@@ -31,8 +31,7 @@ int dispatcher();
 int dispatch(TCB_t *task);
 void unblock_thread(int tid);
 int setPriority();
-
-//void addInSortedFILA2(PFILA2 pfila, void *content);
+int addInSortedFILA2(PFILA2 pfila, void *content);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -41,15 +40,19 @@ int cidentify (char *name, int size){
   if(size < length){
       return -1;
  }
-  char names[] = {'L','i','s','i','a','n','e',':','2','5','2','7','3','9','\n','M','a','r','c','e','l','y',':','2','2','8','4','5','4'};
+  char names[] = {'L','i','s','i','a','n','e',':','2','5','2','7','3','9','\n',
+                  'M','a','r','c','e','l','y',':','2','2','8','4','5','4'};
   int i = 0;
-  for (i = 0; i < length; i++) {
-
+  while(i < length){
+    *name = names[i];
+    name++;
+    i++;
+  }
+  /*for (int i = 0; i < length; i++) {
 	*name = names[i];
 	name++;
-  }
-      return 0;
-    
+  }*/
+  return 0;
 }
 
 int ccreate(void* (*start)(void*), void *arg, int prio) {
@@ -81,9 +84,7 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
   context->uc_link = &terminate_context;
   makecontext(context, (void (*)(void)) start, 1, arg);
-  //printf("I entendered the ccthread, but the tid is crazy\n");
-  //now we need to add it on the ready queue
-  AppendFila2(&ready, (void *)tcb);
+  AppendFila2(&ready, (void *)tcb); //now we need to add it on the ready queue
   return tcb->tid;
 }
 
@@ -168,7 +169,7 @@ void initialize(){
 void terminate(){
   running->state = ENDED;
   stopTimer();
-  printf("finished without needing to save the clock\n");
+  //printf("finished without needing to save the clock\n");
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
   AppendFila2(&finished, (void *)running); //goes to list of finished threads
   unblock_thread(running->tid);//if something was waiting, we should free it to continue execution
@@ -220,5 +221,9 @@ int setPriority(){
     printf("Inside dispatch the total is %d\n", running->prio);
     return 0;
   }
+  return -1;
+}
+
+int addInSortedFILA2(PFILA2 pfila, void *content){
   return -1;
 }
