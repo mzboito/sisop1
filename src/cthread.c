@@ -31,7 +31,7 @@ int dispatcher();
 int dispatch(TCB_t *task);
 void unblock_thread(int tid);
 int setPriority();
-int addInSortedFILA2(PFILA2 pfila, void *content);
+int addInSortedFILA2(FILA2 fila, TCB_t *content);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
 
@@ -60,7 +60,6 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
 
   if(last_tid < 0){ // it means it is the first created thread from the main flow
     initialize();
-    //printf("last_tid %d\n", last_tid);
     // here we need to set and save the main flow
     getcontext(&main_tcb.context);
     ucontext_t *context = &main_tcb.context;
@@ -76,7 +75,6 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   tcb->state = READY;
   tcb->prio = prio;
   tcb->wait_tid = -1;
-  //printf("last_tid %d\n", last_tid);
   //now we need to create a new tcb-> context
   getcontext(&tcb->context);
   ucontext_t *context = &tcb->context;
@@ -204,7 +202,7 @@ void unblock_thread(int tid){
   do{
     blocked_tcb = (TCB_t*) GetAtIteratorFila2(&blocked);
     if(blocked_tcb){
-      if(blocked_tcb->wait_tid == tid){ //it there is someone waiting
+      if(blocked_tcb->wait_tid == tid){ //if there is someone waiting
         blocked_tcb->wait_tid = -1;
         blocked_tcb->state = READY;
         AppendFila2(&ready, (void *)blocked_tcb);
@@ -224,6 +222,22 @@ int setPriority(){
   return -1;
 }
 
-int addInSortedFILA2(PFILA2 pfila, void *content){
-  return -1;
+int addInSortedFILA2(FILA2 fila, TCB_t *content){
+  FirstFila2(&fila);
+  TCB_t *tcb = (TCB_t*)GetAtIteratorFila2(&fila);
+
+  if(!tcb){ //if the list is empty
+    AppendFila2(&fila, (void*) content);
+    return 0;
+  }
+  //else
+  do{
+    if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
+      InsertBeforeIteratorFila2(&fila, (void*) content); //puts it in the position before TCB
+      return 0;
+    }
+  }while(NextFila2(&fila) == 0); //while there are still elements left
+  //if the code comes here, it means the content is the largest in priority value
+  InsertAfterIteratorFila2(&fila, (void*) content); //puts it in the last position of the FILA2
+  return 0;
 }
