@@ -135,14 +135,14 @@ int cjoin(int tid){
 }
 
 int csem_init(csem_t *sem, int count) {
-
-  if (count < 0) {
+  if (count <= 0) {
 	return -1;
   }
-   PFILA2 filaSem;
-   CreateFila2(filaSem);
+   sem = malloc (sizeof(csem_t));
+   FILA2 filaSem;
+   CreateFila2(&filaSem);
    sem->count = count;
-   sem->fila = filaSem;
+   sem->fila = &filaSem;
    return 0;
 }
 
