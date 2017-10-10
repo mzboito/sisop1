@@ -135,7 +135,6 @@ int csem_init(csem_t *sem, int count);
 int cwait(csem_t *sem);
 int csignal(csem_t *sem);
 
-
 //other functions
 void initialize(){
   last_tid = 0; //main is the pid = 0
