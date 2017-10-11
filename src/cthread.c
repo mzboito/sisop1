@@ -82,7 +82,9 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
   context->uc_link = &terminate_context;
   makecontext(context, (void (*)(void)) start, 1, arg);
-  AppendFila2(&ready, (void *)tcb); //now we need to add it on the ready queue
+  addInSortedFILA2(&ready, tcb);
+  startTimer();
+  //AppendFila2(&ready, (void *)tcb); //now we need to add it on the ready queue
   return tcb->tid;
 }
 
@@ -91,9 +93,11 @@ int cyield(void){
       initialize();
   }
   if(running){ //if running pointer is not null
+    //printf("shifting\n");
     running->state = READY;
-    AppendFila2(&ready,(void *)running);
     setPriority(); //set the new priority after execution
+    addInSortedFILA2(&ready, running);
+    //AppendFila2(&ready,(void *)running);
     swapcontext(&running->context, &scheduler_context);
     return 0;
   }
@@ -169,7 +173,8 @@ void initialize(){
   CreateFila2(&finished);
   running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
   main_tcb.tid = 0;
-  main_tcb.state = READY; //because now we are going to the thread
+  //!!!!!!!!!!! CHANGES HERE
+  main_tcb.state = EXEC; //because now we are going to the thread
   main_tcb.wait_tid = -1;
   main_tcb.prio = 0;
   running = &main_tcb;
@@ -216,7 +221,8 @@ void unblock_thread(int tid){
       if(blocked_tcb->wait_tid == tid){ //if there is someone waiting
         blocked_tcb->wait_tid = -1;
         blocked_tcb->state = READY;
-        AppendFila2(&ready, (void *)blocked_tcb);
+        addInSortedFILA2(&ready, blocked_tcb);
+        //AppendFila2(&ready, (void *)blocked_tcb);
         DeleteAtIteratorFila2(&blocked);
       }
     }
@@ -243,8 +249,10 @@ int addInSortedFILA2(PFILA2 fila, TCB_t *content){
   do{
     tcb =  (TCB_t*)GetAtIteratorFila2(fila);
     if(tcb){
+      //printf("I'm here searching for the thread\n");
       if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
         InsertBeforeIteratorFila2(fila, (void*) content); //puts it in the position before TCB
+        //printf("%d\n", content->prio);
         return 0;
       }
     }

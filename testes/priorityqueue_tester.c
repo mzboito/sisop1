@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   ccreate(foo1, &arg,2);
   ccreate(foo2, &arg,4);
   ccreate(foo3, &arg,5);
-  ccreate(foo4, &arg,1);
+  ccreate(foo4, &arg,0);
   ccreate(foo5, &arg,3);
   cyield();
   printf("I am on the main right now\n");
