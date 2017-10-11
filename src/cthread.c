@@ -67,6 +67,7 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
     context->uc_stack.ss_size = sizeof(char)*SIGSTKSZ;
     context->uc_link = &terminate_context; //!!! not sure yet
     makecontext(context, (void(*)(void)) start, 1, arg);
+    startTimer(); // starts timer for main thread
   }
   //now we create the new TCB structure
   last_tid++;
@@ -83,7 +84,6 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   context->uc_link = &terminate_context;
   makecontext(context, (void (*)(void)) start, 1, arg);
   addInSortedFILA2(&ready, tcb);
-  startTimer();
   //AppendFila2(&ready, (void *)tcb); //now we need to add it on the ready queue
   return tcb->tid;
 }
