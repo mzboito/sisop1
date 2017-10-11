@@ -182,7 +182,7 @@ void initialize(){
 
 void terminate(){
   running->state = ENDED;
-  stopTimer();
+  setPriority();
   //printf("finished without needing to save the clock\n");
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
   AppendFila2(&finished, (void *)running); //goes to list of finished threads
@@ -233,7 +233,7 @@ int setPriority(){
   int pTime = stopTimer(); //gets the number of cpu cicles the process took
   if(pTime > 0){
     running->prio = running->prio + (pTime % cpuMz);
-    printf("Inside dispatch the total is %d\n", running->prio);
+    printf("Inside dispatch pid %d the total is %d\n", running->tid, running->prio);
     return 0;
   }
   return -1;
