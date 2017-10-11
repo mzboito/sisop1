@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
   ccreate(foo3, &arg,5);
   ccreate(foo4, &arg,0);
   ccreate(foo5, &arg,3);
-  cyield();
+  cjoin(3);
   printf("I am on the main right now\n");
   printf("And finally we are finished\n");
 }

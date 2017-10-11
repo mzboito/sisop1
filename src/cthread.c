@@ -67,7 +67,7 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
     context->uc_stack.ss_size = sizeof(char)*SIGSTKSZ;
     context->uc_link = &terminate_context; //!!! not sure yet
     makecontext(context, (void(*)(void)) start, 1, arg);
-    startTimer(); // starts timer for main thread
+    //startTimer(); // starts timer for main thread
   }
   //now we create the new TCB structure
   last_tid++;
