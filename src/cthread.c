@@ -30,7 +30,7 @@ void terminate();
 int dispatcher();
 int dispatch(TCB_t *task);
 void unblock_thread(int tid);
-int setPriority();
+int updatePriority();
 int addInSortedFILA2(PFILA2 fila, TCB_t *content);
 
 // main functions from cthread.h DO NOT CHANGE THE HEADER
@@ -95,7 +95,7 @@ int cyield(void){
   if(running){ //if running pointer is not null
     //printf("shifting\n");
     running->state = READY;
-    setPriority(); //set the new priority after execution
+    updatePriority(); //set the new priority after execution
     addInSortedFILA2(&ready, running);
     //AppendFila2(&ready,(void *)running);
     swapcontext(&running->context, &scheduler_context);
@@ -133,7 +133,7 @@ int cjoin(int tid){
   running->wait_tid = tid;
   //changes priority
   AppendFila2(&blocked, (void *) running); //adds this thread in the blocked list
-  setPriority(); //set the new priority
+  updatePriority(); //set the new priority
   swapcontext(&running->context, &scheduler_context);//switch with scheduler
   return 0;
 }
@@ -151,24 +151,22 @@ int csem_init(csem_t *sem, int count) {
 }
 
 int cwait(csem_t *sem) {
- 
- int dec = sem->count;
- if (sem != NULL) {
-   sem = malloc (sizeof(csem_t));
-   if (dec <  0) {
-     //bloqueia processo
-     running->state = BLOCKED;
-     AppendFila2(&blocked, (void *) running);
-    //insere no fim da fila
-     swapcontext(&running->context, &scheduler_context);
-   }
-   
-   dec--;
-   return 0;
+ if (!sem){ //if the structure null, something is wrong!
+   return -1;
  }
- else {
-	return -1;
-   }
+ if (sem->count > 0){ //if there are resources left
+   sem->count--; //subtract the resource for the running thread
+   //no need for blocking anything, the thread will just enter the critical zone
+ }
+ else{ //if there are not resources left
+   sem->count--; //subtract the resource
+   running->state = BLOCKED; //bloqueia processo
+   updatePriority(); //atualiza prioridade
+   AppendFila2(&blocked, (void *) running); //insere no fim da fila de bloqueados
+   AppendFila2(sem->fila, (void *) running); //adds the thread in the list of waiting threads
+   swapcontext(&running->context, &scheduler_context);
+ }
+   return 0; //finished
 }
 
 int csignal(csem_t *sem);
@@ -202,7 +200,7 @@ void initialize(){
 
 void terminate(){
   running->state = ENDED;
-  setPriority();
+  updatePriority();
   //printf("finished without needing to save the clock\n");
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
   AppendFila2(&finished, (void *)running); //goes to list of finished threads
@@ -249,7 +247,7 @@ void unblock_thread(int tid){
   }while(NextFila2(&blocked) == 0); //while there are still elements left
   }
 
-int setPriority(){
+int updatePriority(){
   int pTime = stopTimer(); //gets the number of cpu cicles the process took
   if(pTime > 0){
     running->prio = running->prio + (pTime % cpuMz);
