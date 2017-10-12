@@ -165,6 +165,7 @@ int cwait(csem_t *sem) {
    //no need for blocking anything, the thread will just enter the critical zone
  }
  else{ //if there are not resources left
+   //printf("Ta ocupado, espera!!!\n");
    sem->count--; //subtract the resource
    running->state = BLOCKED; //bloqueia processo
    updatePriority(); //atualiza prioridade

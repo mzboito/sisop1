@@ -31,6 +31,6 @@ int main(int argc, char *argv[]) {
   ccreate(foo, sem, 0);
   ccreate(foo2, sem, 0);
   ccreate(foo, sem, 0);
-  cjoin(3);
+  cjoin(4);
   printf("Now we are backing in the main!\n");
 }
