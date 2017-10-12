@@ -150,7 +150,27 @@ int csem_init(csem_t *sem, int count) {
    return 0;
 }
 
-int cwait(csem_t *sem);
+int cwait(csem_t *sem) {
+ 
+ int dec = sem->count;
+ if (sem != NULL) {
+   sem = malloc (sizeof(csem_t));
+   if (dec <  0) {
+     //bloqueia processo
+     running->state = BLOCKED;
+     AppendFila2(&blocked, (void *) running);
+    //insere no fim da fila
+     swapcontext(&running->context, &scheduler_context);
+   }
+   
+   dec--;
+   return 0;
+ }
+ else {
+	return -1;
+   }
+}
+
 int csignal(csem_t *sem);
 
 //other functions
