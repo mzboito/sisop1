@@ -4,21 +4,20 @@
 #include <stdio.h>
 #include "stdlib.h"
 
-void foo(int *arg){
-  printf("just doing my stuff here %d, %d\n", &arg, arg);
-  printer();
-}
-
 void printer(){
   csem_t *sem;
-  printf("csem init returns %d\n",csem_init(sem,1);
+  printf("csem init returns %d\n",csem_init(sem,1));
   int value = cwait(sem);
   if (value > 0){
       printf("TCHU TCHU PRINTING PRINTING PRINTING TCHU TCHU\n\n");
   }else{
     printf("nope\n");
   }
+}
 
+void foo(int *arg){
+  printf("just doing my stuff here %d\n", *arg);
+  printer();
 }
 
 
