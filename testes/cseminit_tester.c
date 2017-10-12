@@ -7,7 +7,7 @@
 
 
 int main(int argc, char *argv[]) {
-  csem_t *sem;
+  csem_t *sem = malloc(sizeof(csem_t));
   printf("before calling csem\n");
   int retorno = csem_init(sem,1);
   printf("%d\n",retorno);

@@ -5,6 +5,7 @@
 #include "stdlib.h"
 
 void printer(csem_t *sem){
+  printf("%d\n", *sem->count);
   cwait(sem);
   printf("TCHU TCHU PRINTING PRINTING PRINTING TCHU TCHU\n\n");
 }

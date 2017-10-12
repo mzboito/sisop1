@@ -142,19 +142,25 @@ int csem_init(csem_t *sem, int count) {
   if (count <= 0) {
 	return -1;
   }
-   sem = malloc (sizeof(csem_t));
-   FILA2 filaSem;
-   CreateFila2(&filaSem);
+   //sem = malloc (sizeof(csem_t));
+   //FILA2 filaSem;
+   //CreateFila2(&filaSem);
    sem->count = count;
-   sem->fila = &filaSem;
-   return 0;
+   sem->fila = malloc(sizeof(struct sFila2));
+   CreateFila2(sem->fila);
+   if(sem && sem->fila){
+     return 0;
+   }else{
+     return -1;
+   }
 }
 
 int cwait(csem_t *sem) {
  if (!sem){ //if the structure null, something is wrong!
    return -1;
  }
- if (sem->count > 0){ //if there are resources left
+ printf("sem->count inside cwait %d\n", sem->count);
+ if(sem->count > 0){ //if there are resources left
    sem->count--; //subtract the resource for the running thread
    //no need for blocking anything, the thread will just enter the critical zone
  }
