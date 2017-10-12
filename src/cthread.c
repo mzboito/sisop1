@@ -159,7 +159,7 @@ int cwait(csem_t *sem) {
  if (!sem){ //if the structure null, something is wrong!
    return -1;
  }
- printf("sem->count inside cwait %d\n", sem->count);
+ //printf("sem->count inside cwait %d\n", sem->count);
  if(sem->count > 0){ //if there are resources left
    sem->count--; //subtract the resource for the running thread
    //no need for blocking anything, the thread will just enter the critical zone
