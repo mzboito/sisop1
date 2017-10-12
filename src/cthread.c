@@ -182,17 +182,17 @@ int csignal(csem_t *sem){
   if(sem->count < 0){ //if there are threads waiting
     sem->count++;
     FirstFila2(sem->fila); //let's get a thread to unblock!
-    TCB_t *tcb;
-    do{
-      tcb = (TCB_t*)GetAtIteratorFila2(sem->fila);
-      if(tcb){ //if the tcb is not null
-          tcb->state = READY;
-          AppendFila2(&ready, (void*) tcb);
-          //DeleteAtIteratorFila2(&blocked);
-          DeleteAtIteratorFila2(sem->fila);
-          return 0;
-      }
-    }while(NextFila2(sem->fila) == 0);
+    if(sem->fila->it){ //if we have an iterator
+
+    }
+    TCB_t *tcb = (TCB_t*)GetAtIteratorFila2(sem->fila);
+    if(tcb){ //if the tcb is not null
+        tcb->state = READY;
+        AppendFila2(&ready, (void*) tcb);
+        //DeleteAtIteratorFila2(&blocked);
+        DeleteAtIteratorFila2(sem->fila);
+        return 0;
+    }
   } else{
     sem->count++; //if there are no threads waiting for the resource
     return 0;

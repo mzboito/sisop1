@@ -18,11 +18,11 @@ void foo(csem_t *sem){
 
 int main(int argc, char *argv[]) {
   csem_t *sem = malloc(sizeof(csem_t));
-  csem_init(sem,1);
+  csem_init(sem,2);
   printf("Let's create some threads, guys\n");
   ccreate(foo, sem, 0);
   ccreate(foo, sem, 0);
   ccreate(foo, sem, 0);
-  cjoin(2);
+  cjoin(3);
 
 }
