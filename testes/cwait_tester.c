@@ -4,29 +4,24 @@
 #include <stdio.h>
 #include "stdlib.h"
 
-void printer(){
-  csem_t *sem;
-  printf("csem init returns %d\n",csem_init(sem,1));
-  int value = cwait(sem);
-  if (value > 0){
-      printf("TCHU TCHU PRINTING PRINTING PRINTING TCHU TCHU\n\n");
-  }else{
-    printf("nope\n");
-  }
+void printer(csem_t *sem){
+  cwait(sem);
+  printf("TCHU TCHU PRINTING PRINTING PRINTING TCHU TCHU\n\n");
 }
 
-void foo(int *arg){
-  printf("just doing my stuff here %d\n", *arg);
-  printer();
+void foo(csem_t *sem){
+  printf("just doing my stuff here\n");
+  printer(sem);
 }
 
 
 int main(int argc, char *argv[]) {
-  int arg = 1;
+  csem_t *sem;
+  csem_init(sem,1);
   printf("Let's create some threads, guys\n");
-  ccreate(foo, &arg, 0);
-  ccreate(foo, &arg, 0);
-  ccreate(foo, &arg, 0);
-  cjoin(3);
+  ccreate(foo, sem, 0);
+  ccreate(foo, sem, 0);
+  ccreate(foo, sem, 0);
+  cjoin(2);
 
 }

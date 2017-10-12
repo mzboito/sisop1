@@ -274,7 +274,7 @@ int updatePriority(){
   int pTime = stopTimer(); //gets the number of cpu cicles the process took
   if(pTime > 0){
     running->prio = running->prio + (pTime % cpuMz);
-    printf("Inside dispatch pid %d the total is %d\n", running->tid, running->prio);
+    //printf("Inside dispatch pid %d the total is %d\n", running->tid, running->prio);
     return 0;
   }
   return -1;
