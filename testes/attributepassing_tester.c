@@ -6,10 +6,10 @@
 
 void foo(int *arg){
   printf("just doing my stuff here %d, %d\n", &arg, arg);
-  printer();
+  //printer();
 }
 
-void printer(){
+/*void printer(){
   csem_t *sem;
   printf("csem init returns %d\n",csem_init(sem,1);
   int value = cwait(sem);
@@ -20,7 +20,7 @@ void printer(){
   }
 
 }
-
+*/
 
 int main(int argc, char *argv[]) {
   int arg = 1;
