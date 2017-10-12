@@ -139,20 +139,22 @@ int cjoin(int tid){
 }
 
 int csem_init(csem_t *sem, int count) {
-  if (count <= 0) {
+  /*if (count <= 0) {
 	return -1;
-  }
-   //sem = malloc (sizeof(csem_t));
-   //FILA2 filaSem;
-   //CreateFila2(&filaSem);
+}*/
+   //printf("inside cwait\n");
    sem->count = count;
+   //printf("sem-> count = %d\n", sem->count);
    sem->fila = malloc(sizeof(struct sFila2));
    CreateFila2(sem->fila);
+   //printf("%d\n", CreateFila2(sem->fila));
+   //printf("%d\n", FirstFila2(sem->fila));
    if(sem && sem->fila){
      return 0;
    }else{
      return -1;
    }
+   //return 0;
 }
 
 int cwait(csem_t *sem) {
