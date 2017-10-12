@@ -162,14 +162,37 @@ int cwait(csem_t *sem) {
    sem->count--; //subtract the resource
    running->state = BLOCKED; //bloqueia processo
    updatePriority(); //atualiza prioridade
-   AppendFila2(&blocked, (void *) running); //insere no fim da fila de bloqueados
+   //AppendFila2(&blocked, (void *) running); //insere no fim da fila de bloqueados
    AppendFila2(sem->fila, (void *) running); //adds the thread in the list of waiting threads
    swapcontext(&running->context, &scheduler_context);
  }
    return 0; //finished
 }
 
-int csignal(csem_t *sem);
+int csignal(csem_t *sem){
+  if(!sem){ //testing for null structure
+    return -1;
+  }
+  if(sem->count < 0){ //if there are threads waiting
+    sem->count++;
+    FirstFila2(sem->fila); //let's get a thread to unblock!
+    TCB_t *tcb;
+    do{
+      tcb = (TCB_t*)GetAtIteratorFila2(sem->fila);
+      if(tcb){ //if the tcb is not null
+          tcb->state = READY;
+          AppendFila2(&ready, (void*) tcb);
+          //DeleteAtIteratorFila2(&blocked);
+          DeleteAtIteratorFila2(sem->fila);
+          return 0;
+      }
+    }while(NextFila2(sem->fila) == 0);
+  } else{
+    sem->count++; //if there are no threads waiting for the resource
+    return 0;
+  }
+  return 0;
+}
 
 //other functions
 void initialize(){
