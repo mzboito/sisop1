@@ -5,22 +5,9 @@
 #include "stdlib.h"
 
 void foo(int *arg){
-  printf("just doing my stuff here %d, %d\n", &arg, arg);
+  printf("just doing my stuff here %d\n", *arg);
   //printer();
 }
-
-/*void printer(){
-  csem_t *sem;
-  printf("csem init returns %d\n",csem_init(sem,1);
-  int value = cwait(sem);
-  if (value > 0){
-      printf("TCHU TCHU PRINTING PRINTING PRINTING TCHU TCHU\n\n");
-  }else{
-    printf("nope\n");
-  }
-
-}
-*/
 
 int main(int argc, char *argv[]) {
   int arg = 1;
