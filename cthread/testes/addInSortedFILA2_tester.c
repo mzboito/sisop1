@@ -1,3 +1,9 @@
+/*
+O objetivo desse teste e verificar a implementação da função addInSortedFILA2.
+Essa funcao e a responsavel por criar uma lista de threads aptas ordenada por prioridade.
+O retorno vai ser uma lista de threads ordenada por suas prioridades, e nao por seu tid (ordem de criacao).
+*/
+
 #include "../include/cthread.h"
 #include "../include/cdata.h"
 #include "../include/support.h"

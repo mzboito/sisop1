@@ -1,3 +1,9 @@
+/*
+Esse tester apenas testa passar argumentos para threads, para nos assegurarmos
+que a makecontext esta guardando tudo de forma adequada.
+
+*/
+
 #include "../include/cthread.h"
 #include "../include/cdata.h"
 #include "../include/support.h"
@@ -11,10 +17,12 @@ void foo(int *arg){
 
 int main(int argc, char *argv[]) {
   int arg = 1;
-  printf("Let's create some threads, guys\n");
-  ccreate(foo, &arg, 0);
-  ccreate(foo, &arg, 0);
-  ccreate(foo, &arg, 0);
+  printf("Let's create some threads, guys!\n");
+  ccreate((void*)foo, &arg, 0);
+  int arg2 = 2;
+  ccreate((void*)foo, &arg2, 0);
+  int arg3 = 3;
+  ccreate((void*)foo, &arg3, 0);
   cjoin(3);
-
+  printf("Perfect! Goodbye! \n");
 }
