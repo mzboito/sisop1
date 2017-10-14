@@ -5,7 +5,7 @@
 //             micro kernel desenvolvido na disciplina INF01142
 //
 // Primitivas testadas: ccreate, cjoin, cyield, cwait e csignal.
-// 
+//
 // Este programa é basedo na solução de Tanenbaum apresentada no livro
 // "Modern Operating System" (Prentice Hall International 2 ed.).
 //
@@ -32,16 +32,13 @@ int    waiting = 0;
 
 void sleepao() {
      int i = 0;
- 
      i = rand()%5 + 1;
      for (; i<0; i--) cyield();
-     return;
 }
 
 void cut_hair(void)
 {
-    cyield(); cyield(); cyield(); cyield;
-    return;
+    cyield(); cyield(); cyield(); cyield();
 }
 
 void* barber(void* arg)
@@ -55,11 +52,10 @@ void* barber(void* arg)
      cut_hair();
      csignal(&barbers);
   }
-  return;
 }
 
 void* customer(void* arg)
-{   
+{
    while(time(NULL) < end_time) {
       cwait(&mutex);
       if (waiting < CHAIRS) {
@@ -74,7 +70,6 @@ void* customer(void* arg)
       }
       sleepao();
     }
-    return;
 }
 
 int main(int argc, char **argv)
@@ -101,7 +96,3 @@ int main(int argc, char **argv)
 
     exit(0);
 }
-    
-    
-
-

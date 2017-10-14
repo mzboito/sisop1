@@ -6,6 +6,7 @@
 #include "../include/cthread.h"
 
 //control variables
+
 //a FILA2 for blocked, ready and finished
 FILA2 ready;
 FILA2 blocked;
@@ -48,15 +49,11 @@ int cidentify (char *name, int size){
     name++;
     i++;
   }
-  /*for (int i = 0; i < length; i++) {
-	*name = names[i];
-	name++;
-  }*/
   return 0;
 }
 
-int ccreate(void* (*start)(void*), void *arg, int prio) {
-  char *stack = malloc(sizeof(char)*SIGSTKSZ); //looks more correct
+int ccreate(void* (*start)(void*), void *arg, int prio){
+  char *stack = malloc(sizeof(char)*SIGSTKSZ);
 
   if(last_tid < 0){ // it means it is the first created thread from the main flow
     initialize();
@@ -67,7 +64,6 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
     context->uc_stack.ss_size = sizeof(char)*SIGSTKSZ;
     context->uc_link = &terminate_context; //!!! not sure yet
     makecontext(context, (void(*)(void)) start, 1, arg);
-    //startTimer(); // starts timer for main thread
   }
   //now we create the new TCB structure
   last_tid++;
@@ -83,8 +79,7 @@ int ccreate(void* (*start)(void*), void *arg, int prio) {
   context->uc_stack.ss_size = sizeof(char)* SIGSTKSZ;
   context->uc_link = &terminate_context;
   makecontext(context, (void (*)(void)) start, 1, arg);
-  addInSortedFILA2(&ready, tcb);
-  //AppendFila2(&ready, (void *)tcb); //now we need to add it on the ready queue
+  addInSortedFILA2(&ready, tcb); //now we need to add it on the ready queue
   return tcb->tid;
 }
 
@@ -93,11 +88,9 @@ int cyield(void){
       initialize();
   }
   if(running){ //if running pointer is not null
-    //printf("shifting\n");
     running->state = READY;
     updatePriority(); //set the new priority after execution
     addInSortedFILA2(&ready, running);
-    //AppendFila2(&ready,(void *)running);
     swapcontext(&running->context, &scheduler_context);
     return 0;
   }
@@ -138,40 +131,29 @@ int cjoin(int tid){
   return 0;
 }
 
-int csem_init(csem_t *sem, int count) {
-  /*if (count <= 0) {
-	return -1;
-}*/
-   //printf("inside cwait\n");
+int csem_init(csem_t *sem, int count){
    sem->count = count;
-   //printf("sem-> count = %d\n", sem->count);
    sem->fila = malloc(sizeof(struct sFila2));
    CreateFila2(sem->fila);
-   //printf("%d\n", CreateFila2(sem->fila));
-   //printf("%d\n", FirstFila2(sem->fila));
    if(sem && sem->fila){
      return 0;
    }else{
      return -1;
    }
-   //return 0;
 }
 
-int cwait(csem_t *sem) {
+int cwait(csem_t *sem){
  if (!sem){ //if the structure null, something is wrong!
    return -1;
  }
- //printf("sem->count inside cwait %d\n", sem->count);
  if(sem->count > 0){ //if there are resources left
    sem->count--; //subtract the resource for the running thread
    //no need for blocking anything, the thread will just enter the critical zone
  }
  else{ //if there are not resources left
-   //printf("Ta ocupado, espera!!!\n");
    sem->count--; //subtract the resource
    running->state = BLOCKED; //bloqueia processo
    updatePriority(); //atualiza prioridade
-   //AppendFila2(&blocked, (void *) running); //insere no fim da fila de bloqueados
    AppendFila2(sem->fila, (void *) running); //adds the thread in the list of waiting threads
    swapcontext(&running->context, &scheduler_context);
  }
@@ -185,22 +167,22 @@ int csignal(csem_t *sem){
   if(sem->count < 0){ //if there are threads waiting
     sem->count++;
     FirstFila2(sem->fila); //let's get a thread to unblock!
-    if(sem->fila->it){ //if we have an iterator
 
+    if(sem->fila->it){ // tester for the PFILA inside
+      TCB_t *tcb = (TCB_t*)GetAtIteratorFila2(sem->fila);
+      if(tcb){ //if the tcb is not null
+          tcb->state = READY;
+          AppendFila2(&ready, (void*) tcb);
+          DeleteAtIteratorFila2(sem->fila);
+          return 0;
+      } else{ //problem
+        return -1;
+      }
     }
-    TCB_t *tcb = (TCB_t*)GetAtIteratorFila2(sem->fila);
-    if(tcb){ //if the tcb is not null
-        tcb->state = READY;
-        AppendFila2(&ready, (void*) tcb);
-        //DeleteAtIteratorFila2(&blocked);
-        DeleteAtIteratorFila2(sem->fila);
-        return 0;
-    }
-  } else{
+  }else{ // if there are no threads waiting for the resource
     sem->count++; //if there are no threads waiting for the resource
     return 0;
   }
-  return 0;
 }
 
 //other functions
@@ -223,7 +205,6 @@ void initialize(){
   CreateFila2(&finished);
   running = malloc(sizeof(TCB_t)); //we need to separe memory area for running
   main_tcb.tid = 0;
-  //!!!!!!!!!!! CHANGES HERE
   main_tcb.state = EXEC; //because now we are going to the thread
   main_tcb.wait_tid = -1;
   main_tcb.prio = 0;
@@ -233,7 +214,6 @@ void initialize(){
 void terminate(){
   running->state = ENDED;
   updatePriority();
-  //printf("finished without needing to save the clock\n");
   free(running->context.uc_stack.ss_sp); //you need to free the stack!!!
   AppendFila2(&finished, (void *)running); //goes to list of finished threads
   unblock_thread(running->tid);//if something was waiting, we should free it to continue execution
@@ -241,16 +221,13 @@ void terminate(){
 }
 
 int dispatcher(){
-  //printf("Now I'm on the dispatcher\n");
-  //sort the list
-  //InsertAfterIteratorFila2(PFILA2 pFila, void *content);
-  FirstFila2(&ready);
+  FirstFila2(&ready); // the queue is already sorted
   TCB_t *task = (TCB_t *) GetAtIteratorFila2(&ready); //get first one
   if(task){ //see if it this first one is not null (empty list)
     DeleteAtIteratorFila2(&ready); //and then remove it from ready list
     dispatch(task); //dispatching returns how much time was spent running the task
   }
-  printf("There are no threads left!\n\n");
+  printf("\n\nThere are no threads left! :(\n\n");
   exit(0);
 }
 
@@ -272,7 +249,6 @@ void unblock_thread(int tid){
         blocked_tcb->wait_tid = -1;
         blocked_tcb->state = READY;
         addInSortedFILA2(&ready, blocked_tcb);
-        //AppendFila2(&ready, (void *)blocked_tcb);
         DeleteAtIteratorFila2(&blocked);
       }
     }
@@ -283,7 +259,6 @@ int updatePriority(){
   int pTime = stopTimer(); //gets the number of cpu cicles the process took
   if(pTime > 0){
     running->prio = running->prio + (pTime % cpuMz);
-    //printf("Inside dispatch pid %d the total is %d\n", running->tid, running->prio);
     return 0;
   }
   return -1;
@@ -299,10 +274,8 @@ int addInSortedFILA2(PFILA2 fila, TCB_t *content){
   do{
     tcb =  (TCB_t*)GetAtIteratorFila2(fila);
     if(tcb){
-      //printf("I'm here searching for the thread\n");
       if (content->prio < tcb->prio){ //if the one we are inserting is smaller in priority value (higher in priority)
         InsertBeforeIteratorFila2(fila, (void*) content); //puts it in the position before TCB
-        //printf("%d\n", content->prio);
         return 0;
       }
     }
