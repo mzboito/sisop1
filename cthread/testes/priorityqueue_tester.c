@@ -11,27 +11,42 @@ Esse tester verifica a insercao na lista ordenada de threads aptas.
 
 void foo1() {
 printf("I'm priority 2!\n");
-for(int i=0;i < 1000000; i++);
+int i = 0;
+while (i < 1000000) {
+i++;
+}
 }
 
 void foo2() {
 printf("I'm priority 4!\n");
-for(int i=0;i < 1000000; i++);
+int i = 0;
+while (i < 1000000) {
+i++;
+}
 }
 
 void foo3() {
 printf("I'm priority 5!\n");
-for(int i=0;i < 1000000; i++);
+int i = 0;
+while (i < 1000000) {
+i++;
+}
 }
 
 void foo4() {
 printf("I'm priority 1!\n");
-for(int i=0;i < 1000000; i++);
+int i = 0;
+while (i < 1000000) {
+i++;
+}
 }
 
 void foo5() {
 printf("I'm priority 3!\n");
-for(int i=0;i < 1000000; i++);
+int i = 0;
+while (i < 1000000) {
+i++;
+}
 }
 
 int main(int argc, char *argv[]) {

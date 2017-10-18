@@ -12,39 +12,55 @@
 #include "stdlib.h"
 
 void foo1() {
-for(int i=0;i < 100; i++);
+int i = 0;
+while (i < 100) {
 printf("foo1 before cyield\n");
 cyield();
 printf("foo1 after cyield\n");
+i++;
+}
 }
 
 void foo2() {
-for(int i=0;i < 1000; i++);
+int i = 0;
+while (i < 1000) {
+
 printf("foo2 before cyield\n");
 cyield();
 printf("foo2 after cyield\n");
+i++;
+}
 }
 
 void foo3() {
-for(int i=0;i < 1000000; i++);
+int i = 0;
+while (i < 1000000) {
 printf("foo3 before cyield\n");
 cyield();
 printf("foo3 after cyield\n");
+i++;
+}
 }
 
 void foo4() {
-for(int i=0;i < 10000; i++);
+int i = 0;
+while (i < 10000) {
 printf("foo4 before cyield\n");
 cyield();
 printf("foo4 after cyield\n");
+i++;
+}
 }
 
 void foo5() {
 
-for(int i=0;i < 100000; i++);
+int i = 0;
+while (i < 100000) {
 printf("foo5 before cyield\n");
 cyield();
 printf("foo5 after cyield\n");
+i++;
+}
 }
 
 int main(int argc, char *argv[]) {
