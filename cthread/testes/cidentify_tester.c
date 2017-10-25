@@ -25,4 +25,5 @@ int main(int argc, char *argv[]) {
   char* str3 = (char*)malloc(sizeof(char)*(length + 1));
   printf("Invalid return for cidentify: %d\n",cidentify(str3,length));
   free(str3);
+  return 0;
 }

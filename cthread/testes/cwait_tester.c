@@ -30,5 +30,5 @@ int main(int argc, char *argv[]) {
   ccreate((void*)foo, sem, 0);
   ccreate((void*)foo, sem, 0);
   cjoin(3);
-
+  return 0;
 }

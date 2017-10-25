@@ -183,6 +183,7 @@ int csignal(csem_t *sem){
     sem->count++; //if there are no threads waiting for the resource
     return 0;
   }
+  return -1;
 }
 
 //other functions

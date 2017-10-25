@@ -31,7 +31,7 @@ csem_t	vazio, cheio, mutex;
 
 void sleepao(void){
      int i = 0;
- 
+
      i = rand()%5 + 1;
      for (; i<0; i--) cyield();
      return;
@@ -55,7 +55,7 @@ void *produtor(void *arg) {
 void *consumidor(void *arg) {
    int out=0;
 
-   while(TRUE) { 
+   while(TRUE) {
       sleepao();
       cwait(&cheio);
       cwait(&mutex);
@@ -80,8 +80,5 @@ int main(int argc, char *argv[ ]) {
 
     cjoin(prod);
     cjoin(cons);
+    return 0;
 }
-
-
-
-

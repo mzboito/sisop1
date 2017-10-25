@@ -9,7 +9,7 @@ O retorno vai ser uma lista de threads ordenada por suas prioridades, e nao por 
 #include "../include/support.h"
 #include <stdio.h>
 #include "stdlib.h"
-
+int addInSortedFILA2(PFILA2 fila, TCB_t *content);
 
 int main(int argc, char *argv[]) {
   printf("I will now create the threads\n");
@@ -38,4 +38,5 @@ int main(int argc, char *argv[]) {
   }while(NextFila2(&r) == 0);
 
   printf("And finally we are finished\n");
+  return 0;
 }

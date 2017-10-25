@@ -14,13 +14,13 @@ void funcaoThreadExecuta() {
 }
 
 int main(int argc, char *argv[]) {
-
-int arg = 1;
-printf("Criando duas threads simpaticas :)\n");
-ccreate((void*)funcaoThreadExecuta, &arg,0);
-ccreate((void*)funcaoThreadExecuta, &arg,5);
-printf("Elas agora estao na lista de aptos!\n");
-cyield();
-cyield();
-printf("Eventualmente nos voltamos aqui e terminamos com o programa ;)\n");
+	int arg = 1;
+	printf("Criando duas threads simpaticas :)\n");
+	ccreate((void*)funcaoThreadExecuta, &arg,0);
+	ccreate((void*)funcaoThreadExecuta, &arg,5);
+	printf("Elas agora estao na lista de aptos!\n");
+	cyield();
+	cyield();
+	printf("Eventualmente nos voltamos aqui e terminamos com o programa ;)\n");
+	return 0;
 }

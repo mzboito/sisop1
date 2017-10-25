@@ -21,4 +21,5 @@ int main(int argc, char *argv[]) {
   csem_t *sem2;
   retorno = csem_init(sem2,0);
   printf("Retorno csem_init nao alocado: %d\n",retorno);*/
+  return 0;
 }

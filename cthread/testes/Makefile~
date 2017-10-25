@@ -15,4 +15,5 @@ all:
 
 clean:
 	rm *_tester
+	rm *~
 

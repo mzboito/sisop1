@@ -52,6 +52,7 @@ void* barber(void* arg)
      cut_hair();
      csignal(&barbers);
   }
+  return 0;
 }
 
 void* customer(void* arg)
@@ -70,6 +71,7 @@ void* customer(void* arg)
       }
       sleepao();
     }
+    return 0;
 }
 
 int main(int argc, char **argv)
@@ -95,4 +97,5 @@ int main(int argc, char **argv)
     cjoin(tidCustomer);
 
     exit(0);
+    return 0;
 }

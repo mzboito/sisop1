@@ -20,11 +20,11 @@ printf("Thread executa algo! :) \n");
 }
 
 int main(int argc, char *argv[]) {
-
-int arg = 1;
-printf("I will now create two threads...\n");
-int teste = ccreate ((void*)funcaoThreadExecuta, &arg,0);
-printf("The returned tid is: %d\n",teste);
-teste = ccreate((void*)funcaoThreadExecuta, &arg, 0);
-printf("The returned tid is: %d\n", teste);
+	int arg = 1;
+	printf("I will now create two threads...\n");
+	int teste = ccreate ((void*)funcaoThreadExecuta, &arg,0);
+	printf("The returned tid is: %d\n",teste);
+	teste = ccreate((void*)funcaoThreadExecuta, &arg, 0);
+	printf("The returned tid is: %d\n", teste);
+	return 0;
 }

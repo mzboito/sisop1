@@ -25,4 +25,5 @@ int main(int argc, char *argv[]) {
   ccreate((void*)foo, &arg3, 0);
   cjoin(3);
   printf("Perfect! Goodbye! \n");
+  return 0;
 }

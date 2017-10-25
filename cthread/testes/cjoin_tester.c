@@ -30,4 +30,5 @@ int main(int argc, char *argv[]) {
   printf("Return cjoin again for the same thread (error): %d\n",cjoin(1));
   printf("Return cjoin for second thread: %d\n",cjoin(2));
   printf("And finally we are finished! Bye! \n");
+  return 0;
 }

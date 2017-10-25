@@ -60,4 +60,5 @@ int main(int argc, char *argv[]) {
   cjoin(3);
   printf("I am on the main right now\n");
   printf("And finally we are finished\n");
+  return 0;
 }
