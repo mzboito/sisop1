@@ -1,5 +1,5 @@
 all:
-	gcc -c src/cthread.c -o src/cthread.o
-	ar crs lib/libcthread.a src/cthread.o
+	gcc -c src/cthread.c -o bin/cthread.o
+	ar crs lib/libcthread.a bin/cthread.o bin/support.o
 clean:
-	rm src/cthread.o bin/cthread.o
+	rm bin/cthread.o 

@@ -1,5 +1,5 @@
 all:
-	gcc -c ../src/cthread.c -o ../src/cthread.o
+	gcc -c ../src/cthread.c -o ../bin/cthread.o
 	gcc -c csignal_tester.c -o csignal_tester.o
 	gcc -c addInSortedFILA2_tester.c -o addInSortedFILA2_tester.o
 	gcc -c attributepassing_tester.c -o attributepassing_tester.o
@@ -11,7 +11,7 @@ all:
 	gcc -c cwait_tester.c -o cwait_tester.o
 	gcc -c priorityclock_tester.c -o priorityclock_tester.o
 	gcc -c priorityqueue_tester.c -o priorityqueue_tester.o
-	gcc -o csignal_tester ../bin/support.o ../src/cthread.o csignal_tester.o
+	gcc -o csignal_tester -L../lib -libcthread csignal_tester.o
 	gcc -o addInSortedFILA2_tester ../bin/support.o ../src/cthread.o addInSortedFILA2_tester.o
 	gcc -o attributepassing_tester ../bin/support.o ../src/cthread.o attributepassing_tester.o
 	gcc -o ccreate_tester ../bin/support.o ../src/cthread.o ccreate_tester.o
@@ -24,5 +24,5 @@ all:
 	gcc -o cwait_tester ../bin/support.o ../src/cthread.o cwait_tester.o
 
 clean:
-	rm ../src/cthread.o addInSortedFILA2_tester.o attributepassing_tester.o csignal_tester.o ccreate_tester.o cidentify_tester.o cjoin_tester.o cseminit_tester.o cwait_tester.o cyield_tester.o priorityclock_tester.o priorityqueue_tester.o addInSortedFILA2_tester attributepassing_tester csignal_tester ccreate_tester cidentify_tester cjoin_tester cseminit_tester cwait_tester cyield_tester priorityclock_tester priorityqueue_tester
+	rm ../bin/cthread.o addInSortedFILA2_tester.o attributepassing_tester.o csignal_tester.o ccreate_tester.o cidentify_tester.o cjoin_tester.o cseminit_tester.o cwait_tester.o cyield_tester.o priorityclock_tester.o priorityqueue_tester.o addInSortedFILA2_tester attributepassing_tester csignal_tester ccreate_tester cidentify_tester cjoin_tester cseminit_tester cwait_tester cyield_tester priorityclock_tester priorityqueue_tester
 

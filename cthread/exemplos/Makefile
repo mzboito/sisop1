@@ -1,5 +1,5 @@
 all:
-	gcc -c ../src/cthread.c -o ../src/cthread.o
+	gcc -c ../src/cthread.c -o ../bin/cthread.o
 	gcc -c barbeiro.c -o barbeiro.o
 	gcc -c exemplo.c -o exemplo.o
 	gcc -c filosofos.c -o filosofos.o
@@ -18,5 +18,5 @@ all:
 	gcc -o tstSupp ../bin/support.o ../src/cthread.o tstSupp.o
 
 clean:
-	rm ../src/cthread.o barbeiro.o exemplo.o filosofos.o mandel.o prodcons.o series.o teste_vetor.o tstSupp.o barbeiro exemplo filosofos mandel prodcons series teste_vetor tstSupp 
+	rm ../bin/cthread.o barbeiro.o exemplo.o filosofos.o mandel.o prodcons.o series.o teste_vetor.o tstSupp.o barbeiro exemplo filosofos mandel prodcons series teste_vetor tstSupp 
 
